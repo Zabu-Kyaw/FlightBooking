@@ -1,0 +1,129 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Process</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.typekit.net/cav5lva.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/layout_style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/payment_style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/payment_process_style.css' %}">
+    <link rel="icon" href="{% static 'img/logo.png' %}" type="image/x-icon">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'index' %}">
+                <img src="{% static 'img/logo.png' %}" alt="Logo" height="70">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="{% url 'index' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'bookings' %}">Bookings</a>
+                    </li>
+                </ul>
+                <div class="ms-auto">
+                {% if not user.is_authenticated %}
+                    <button class="btn btn-outline-success" type="button" onclick="window.location.href = '/login'">Sign In</button>
+                {% else %}
+                    <div class="dropdown">
+                    <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown">
+                        {{user.first_name}} {{user.last_name}}
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item disabled" >Account</a></li>
+                        <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                    </ul>
+                    </div>
+                {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="row section section1" >
+            <div class="gif-div">
+                <img src="{% static 'img/process.gif' %}" alt="processing">
+            </div>
+            <div class="header-before">
+                Processing Payment...
+            </div>
+            <div class="below-header">
+                Please wait while we are processing your payment.
+            </div>
+        </div>
+        <input type="hidden" class="ref1" value="{{ticket1.ref_no}}">
+        <input type="hidden" class="ref2" value="{{ticket2.ref_no}}">
+
+        <div class="row section section2">
+            <div class="svg-div-c">
+                <svg width="5em" height="5em" viewBox="0 0 16 16" class="bi bi-check-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                </svg>
+            </div>
+            <div class="header-after">
+                Congratulations, Your flight booking is confirmed.
+            </div>
+            <div class="details-div">
+                <div class="flight1">Booking Ref. Number: &nbsp;<span class="ref">{{ticket1.ref_no}}</span>&nbsp;&nbsp;&nbsp;(<span class="from1">{{ticket1.flight.origin.code}}</span> <span>&#8594;</span> <span class="to1">{{ticket1.flight.destination.code}}</span>)</div>
+                <div class="flight2">Booking Ref. Number: &nbsp;<span class="ref">{{ticket2.ref_no}}</span>&nbsp;&nbsp;&nbsp;(<span class="from2">{{ticket2.flight.origin.code}}</span> <span>&#8594;</span> <span class="to2">{{ticket2.flight.destination.code}}</span>)</div>
+            </div>
+            <div class="ticket-div">
+                <div>
+                    <form action="{% url 'getticket' %}" method="get" target="_blank">
+                        <input type="hidden" name="ref" value="{{ticket1.ref_no}}">
+                        <button type="submit" class="btn btn-outline-primary">Print Ticket ({{ticket1.flight.origin.code}} to {{ticket1.flight.destination.code}})</button>
+                    </form>
+                    {% if ticket2 %}
+                        <form action="{% url 'getticket' %}" method="get" target="_blank">
+                            <input type="hidden" name="ref" value="{{ticket2.ref_no}}">
+                            <button type="submit" class="btn btn-outline-primary">Print Ticket ({{ticket2.flight.origin.code}} to {{ticket2.flight.destination.code}})</button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="row section section3">
+            <div class="svg-div-e">
+                <svg width="5em" height="5em" viewBox="0 0 16 16" class="bi bi-x-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
+                </svg>
+            </div>
+            <div class="header-after star">
+                There was an error while processing the payment.
+            </div>
+            <div class="below-header">
+                Please retry after sometime.
+            </div>
+            <div class="ticket-div">
+                <button class="btn btn-outline-primary" type="button" onclick="window.location.href = '/'">Go Home</button>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+<script type="text/javascript" src="{% static 'js/index.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/payment_process.js' %}"></script>
+</html>

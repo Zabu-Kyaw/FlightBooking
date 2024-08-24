@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Sign In</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link href="{% static 'css/styles2.css' %}" rel="stylesheet">
+        <link rel="icon" href="{% static 'img/logo.png' %}" type="image/x-icon">
+    </head>
+    <body>
+        <div class="container">
+            <div class="user-box">
+                <div>
+                    <center>
+                        <a href="{% url 'index' %}"><img src="{% static 'img/logo.png' %}" height="35em" style="margin-bottom: 2vh;"></a>
+                        <h3>Log in to Flight</h3><br>
+                    </center>
+                </div>
+            
+                <form action="{% url 'login' %}" method="post" id="signin-form" style="width: 100%;margin-bottom: 5vh;">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ next }}">
+                    <div class="form-group">
+                        <input class="form-control inp usrnm" type="text" name="username" placeholder="Username" autocomplete="off" autofocus>
+                    </div>
+                    <div class="form-group">
+                        <input class="form-control inp pswd" type="password" name="password" placeholder="Password" autocomplete="off">
+                        <span class="star"><small>{{message}}</small></span>
+                    </div>
+                    <center>
+                        <input class="btn btn-success" type="submit" value="Log in" style="margin-top: 10px; width: 95%;" disabled>
+                    </center>
+                </form>
+            
+                <div>
+                    <center>
+                        Don't have an account?&nbsp;&nbsp;<a href="{% url 'register' %}?next={{ next }}" style="text-decoration: none;">Sign Up</a>
+                    </center>
+                </div>
+            </div>
+        
+            <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                    document.querySelectorAll(".inp").forEach(input => {
+                        input.addEventListener('input', () => {
+                            if ((document.querySelector('.usrnm').value.length === 0) || (document.querySelector('.pswd').value.length === 0)) {
+                                document.querySelector('input[type="submit"]').disabled = true;
+                            }
+                            else {
+                                document.querySelector('input[type="submit"]').disabled = false;
+                            }
+                        });
+                    });
+                });
+            </script>
+        </div>
+    </body>
+</html>
+    
+
+
+
+

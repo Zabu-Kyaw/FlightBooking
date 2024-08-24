@@ -1,0 +1,150 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+{% block head %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Home{% endblock %}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.typekit.net/cav5lva.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/layout_style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/search_style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/search2_style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/book_style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/payment_style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/payment_process_style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bookings_style.css' %}">
+    <link rel="icon" href="{% static 'img/logo.png' %}" type="image/x-icon">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+        }
+        .bg-flight {
+        background-image: url("{% static 'img/airplane.jpeg' %}");
+        background-size: cover;
+        background-position: center;
+        height: 85%;
+        display: flex;
+        justify-content: center; /* Horizontally centers the form-container */
+        align-items: center; /* Vertically centers the form-container */
+        }
+
+        .form-container {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            width: 80%;
+        }
+    </style>
+    
+</head>
+{% endblock %}
+<body>
+    <!-- Header -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'index' %}">
+                <img src="{% static 'img/logo.png' %}" alt="Logo" height="70">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="{% url 'index' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'bookings' %}">Bookings</a>
+                    </li>
+                </ul>
+                <div class="ms-auto">
+                  {% if not user.is_authenticated %}
+                    <button class="btn btn-outline-success" type="button" onclick="window.location.href = '/login'">Sign In</button>
+                  {% else %}
+                    <div class="dropdown">
+                      <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown">
+                        {{user.first_name}} {{user.last_name}}
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li><a class="dropdown-item disabled" >Account</a></li>
+                        <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                      </ul>
+                    </div>
+                  {% endif %}
+                    
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="bg-flight">
+        {% block content %}
+        <div class="form-container">
+            <form class="search-flight-form" action="{% url 'flight' %}" onsubmit="return flight_search()" method="GET">
+                <div class="search-flight-form-data">
+                    <div class="row mb-2 g-3">
+                        <div class="col-md-2">
+                            <label for="trip-type" class="form-label">Trip Type:</label>
+                            <select class="form-select" id="trip-type" name="TripType" >
+                                <option value="1" selected>One Way Trip</option>
+                                <option value="2" {% if trip_type == '2' %}selected{% endif %}>Round Trip</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row mb-2 g-3 input-row">
+                        <div class="col-md-3">
+                            <label for="flight-from">From: </label>
+                            <input type="text" name="Origin" placeholder="Enter place" id="flight-from" class="form-control mr-sm-3" onblur="hideplaces(this)" data-value="{{origin | lower}}" data-list="places_from" autocomplete="off" value="{{origin | upper}}">
+                            <div id="places_from" class="places_box"></div>
+                        </div>
+                        <div class="col-md-3 input-row">
+                            <label for="flight_to">To: </label>
+                            <input type="text" name="Destination" placeholder="Enter place" id="flight-to" class="form-control mr-sm-3" onblur="hideplaces(this)" data-value="{{destination | lower}}" data-list="places_to" autocomplete="off" value="{{destination | upper}}">
+                            <div id="places_to" class="places_box"></div>
+                        </div>
+                        <div class="col-md-2 input-row">
+                            <label for="depart_date">Departure Date:</label>
+                            <input type="date" name="DepartDate" min="{{min_date}}" max="{{max_date}}" id="depart_date" class="form-control" value="{{depart_date}}">
+                        </div>
+                        <div class="col-md-2 input-row">
+                            <label for="return_date">Return Date:</label>
+                            <input type="date" name="ReturnDate" min="{{min_date}}" max="{{max_date}}" id="return_date" class="form-control" value="{{return_date}}" disabled>      
+                        </div>
+                        <div class="col-md-2 input-row">
+                            <label for="seat_class">Class: </label>
+                            <select name="SeatClass" id="SeatType" class="form-control mr-sm-2 selectpicker form-select">
+                                <option value="economy" {% if seat == 'economy' %}selected{% endif %}>Economy</option>
+                                <option value="business" {% if seat == 'business' %}selected{% endif %}>Business</option>
+                                <option value="first" {% if seat == 'first' %}selected{% endif %}>First</option>
+                            </select>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row mb-3 g-3 input-row">
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-info w-100">Search Flight</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        {% endblock %}
+    </div>
+</body>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+<script type="text/javascript" src="{% static 'js/index.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/search.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/book.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/payment_process.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/bookings.js' %}"></script>
+</html>
